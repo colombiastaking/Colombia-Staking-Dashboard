@@ -288,7 +288,7 @@ export const Stake = () => {
           </div>
         </div>
       )}
-      {/* Claimable Rewards Panel */}
+      {/* Claim Rewards Panel */}
       {!isLoading && !isError && !isEmpty && (
         <div className={styles.panel}>
           <div className={styles.icon}>
@@ -297,27 +297,8 @@ export const Stake = () => {
               <FontAwesomeIcon icon={faGift} />
             </div>
           </div>
-          <div className={styles.title}>Claimable Rewards</div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 32,
-              margin: '0 auto 16px auto'
-            }}
-          >
-            <div style={{ textAlign: 'center' }}>
-              <strong className={styles.value}>
-                + {denominated(userClaimableRewards.data || '...', { addCommas: true })} {network.egldLabel}
-              </strong>
-              <div style={{ color: '#808ea3', fontSize: 13, marginTop: 2 }}>
-                Claimable eGLD
-              </div>
-            </div>
-            {/* COLS claimable balance removed as requested */}
-          </div>
+          <div className={styles.title}>Claim Rewards</div>
+          {/* Removed eGLD claimable rewards balance display */}
           <div className={styles.actions}>
             <button
               type="button"
