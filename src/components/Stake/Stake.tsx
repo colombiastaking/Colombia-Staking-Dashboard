@@ -40,33 +40,11 @@ function denominateCols(raw: string, addCommas = true) {
   return result;
 }
 
-// Fetch only claimable COLS rewards for the user (from distribution)
-async function fetchClaimableCols(address: string): Promise<string> {
-  try {
-    // PeerMe COLS contract: getClaimableRewards(address)
-    const PEERME_COLS_CONTRACT = 'erd1qqqqqqqqqqqqqpgqjhn0rrta3hceyguqlmkqgklxc0eh0r5rl3tsv6a9k0';
-    const { Address, ContractFunction, Query, AddressValue, decodeBigNumber } = await import('@multiversx/sdk-core');
-    const { ProxyNetworkProvider } = await import('@multiversx/sdk-network-providers');
-    const provider = new ProxyNetworkProvider(network.gatewayAddress);
-    const query = new Query({
-      address: new Address(PEERME_COLS_CONTRACT),
-      func: new ContractFunction('getClaimableRewards'),
-      args: [new AddressValue(new Address(address))]
-    });
-    const data = await provider.queryContract(query);
-    const [claimable] = data.getReturnDataParts();
-    if (!claimable) return '0';
-    return decodeBigNumber(claimable).toFixed();
-  } catch {
-    return '0';
-  }
-}
+// --- Removed unused fetchClaimableCols function ---
 
 const ClaimCols = ({
-  claimableCols,
   onClaimed
 }: {
-  claimableCols: string;
   onClaimed: () => void;
 }) => {
   const { pending } = useGetActiveTransactionsStatus();
@@ -114,7 +92,7 @@ const ClaimCols = ({
       }}
       onClick={handleClaimCols}
       className={classNames(styles.action)}
-      disabled={pending || loading || claimableCols === '0'}
+      disabled={pending || loading}
     >
       <span role="img" aria-label="fire">🔥</span>
       Claim COLS
@@ -145,23 +123,23 @@ export const Stake = () => {
   const isEmpty =
     userActiveStake.data === '0' && userClaimableRewards.data === '0';
 
-  // --- COLS claimable logic ---
-  const [claimableCols, setClaimableCols] = useState<string>('0');
-  const [colsLoading, setColsLoading] = useState<boolean>(true);
+  // --- COLS claimable logic (no longer shown in UI) ---
+  // const [claimableCols, setClaimableCols] = useState<string>('0');
+  // const [colsLoading, setColsLoading] = useState<boolean>(true);
 
-  const reloadClaimableCols = async () => {
-    if (address) {
-      setColsLoading(true);
-      const amt = await fetchClaimableCols(address);
-      setClaimableCols(amt);
-      setColsLoading(false);
-    }
-  };
+  // const reloadClaimableCols = async () => {
+  //   if (address) {
+  //     setColsLoading(true);
+  //     const amt = await fetchClaimableCols(address);
+  //     setClaimableCols(amt);
+  //     setColsLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    reloadClaimableCols();
-    // eslint-disable-next-line
-  }, [address]);
+  // useEffect(() => {
+  //   reloadClaimableCols();
+  //   // eslint-disable-next-line
+  // }, [address]);
 
   // --- Manual APR Table Logic ---
   const [userApr, setUserApr] = useState<number | null>(null);
@@ -338,14 +316,7 @@ export const Stake = () => {
                 Claimable eGLD
               </div>
             </div>
-            <div style={{ textAlign: 'center' }}>
-              <strong className={styles.value} style={{ color: '#ff9800' }}>
-                + {colsLoading ? '...' : denominateCols(claimableCols, true)} COLS
-              </strong>
-              <div style={{ color: '#ff9800', fontSize: 13, marginTop: 2 }}>
-                Claimable COLS
-              </div>
-            </div>
+            {/* COLS claimable balance removed as requested */}
           </div>
           <div className={styles.actions}>
             <button
@@ -380,10 +351,8 @@ export const Stake = () => {
             >
               Redelegate eGLD
             </button>
-            <ClaimCols
-              claimableCols={denominateCols(claimableCols, true)}
-              onClaimed={reloadClaimableCols}
-            />
+            {/* Always show COLS claim button, always enabled */}
+            <ClaimCols onClaimed={() => {}} />
           </div>
         </div>
       )}
